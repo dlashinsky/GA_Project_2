@@ -153,4 +153,16 @@ This app will have two types of users: General Users and Chef Curators.  A simpl
 
 
 
+## Routes:
+
+HTTP VERB | URL | Description
+------------ | ------------- | -------------
+GET | /recipes | search Query for all recipes
+GET | /recipes/:id | Clicking on a recipe (show page)
+GET | /chefs | Clicking on "chefs", lists chefs.
+GET | /chefs/:id | Clicking on a specific Chef
+POST | /chefs/:id | Pinning a recipe
+POST | /recipe/:id | tagging a recipe with cusine
+POST | /chefs/:id/recipe/:id | commenting on a recipe
+POST | /recipe/:id/chefs/:id | rating a recipe 
 
