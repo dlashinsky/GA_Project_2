@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.5",
+    "crypto-js": "^4.0.0",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-ejs-layouts": "^2.5.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.5.1",
+    "rowdy-logger": "^1.0.2",
+    "sequelize": "^6.5.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "ga_project_2",
+  "description": "* The Consommé * DeGlazed * The Chinois * Render * WeChef",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlashinsky/GA_Project_2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dlashinsky/GA_Project_2/issues"
+  },
+  "homepage": "https://github.com/dlashinsky/GA_Project_2#readme"
+}

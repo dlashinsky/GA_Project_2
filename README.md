@@ -155,14 +155,37 @@ This app will have two types of users: General Users and Chef Curators.  A simpl
 
 ## Routes:
 
-HTTP VERB | URL | Description
+HTTP VERB | URL | Description 
 ------------ | ------------- | -------------
-GET | /recipes | search Query for all recipes
-GET | /recipes/:id | Clicking on a recipe (show page)
-GET | /chefs | Clicking on "chefs", lists chefs.
-GET | /chefs/:id | Clicking on a specific Chef
-POST | /chefs/:id | Pinning a recipe
-POST | /recipe/:id | tagging a recipe with cusine
-POST | /chefs/:id/recipe/:id | commenting on a recipe
-POST | /recipe/:id/chefs/:id | rating a recipe 
+GET | /recipes | User search Query for all recipes within local database
+GET | /recipes/:id | User Clicking on a recipe (show page)
+GET | /chefs | User Clicking on "chefs", lists chefs.
+GET | /chefs/:id | User Clicking on a specific Chef
+GET | /chefs/login | Renders Chef's login page
+POST | /chefs/login | logs chef in, renders Chef's dashboard page
+GET | /chefs/new | renders creating an account page
+POST | /chefs/new | adds new chef to Database, redirects to login page
+GET | /meals-db-recipes | Chefs searching for recipe inspiration from API
+POST |/chefs:id/recipes | Chefs adding their own recipe to the database
+POST | /chefs/:id/meals-db-recipes/:id/recipes| Chef adding a recipe from API 
+POST | /chefs/:id/recipes/:id/cuisines| tagging a recipe with cuisine 
+POST | /chefs/:id/recipes/:id/comments| commenting on a recipe
+POST | /chefs/:id/recipes/:id/rating | chef submitting a rating for a recipe 
+
+
+
+## Strech Goal Routes:
+
+
+HTTP VERB | URL | Description 
+------------ | ------------------ | -------------
+GET | /users/new | renders creating an account for user
+POST | /users/new | creates a new user in the DB, redirects to user login page
+GET | /users/:id | render user dashboard page
+POST | users/:id/recipes/:id | Favorites a recipe to their page (not sure here, don't want to render or redirect, would like to just adjust css to change the color of the pin or something.)
+*POST | /chefs/new | instead of automatically adding a chef to the database, create a vetting process where chef's can "apply" to become a chef to the system. The post will simply send an email out for review.  Once reviewed and approved, they will get an email back with an authentication password, or have a username and password generated for them?
+GET | chefs/:id/chefs-recipes  | Displays all of a particular Chef's recipes that they have added
+POST | chefs/:id/chefs-recipes | Chef adding a new recipe of theirs to their acount
+
+
 
