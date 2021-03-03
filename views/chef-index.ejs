@@ -1,0 +1,16 @@
+<h1>This is the Chef index Page</h1>
+
+<h2> <% chefs.forEach(chef => {  %>    </h2>
+        <div class = chef-card>
+            <img src="imgs/ramsay.png" alt="no image available">
+            <h2>Headline: <%=chef.headline%> </h2>
+            <h3><%=chef.first_name %> <%=chef.last_name %></h3>
+            <form method="GET" action="/chefs/<%=chef.id%>">
+                <input type="hidden" name="id" value="<%=chef.id%>" >
+                <input type="submit" value="Profile">
+            </form>
+        </div>
+
+    <% })  %> 
+
+   

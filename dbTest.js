@@ -22,3 +22,43 @@ async function createChef () {
 
 createChef();
 
+
+// async function deleteChef() {
+//     const findChef = await db.chef.findOne({
+//         where: { first_name: 'Gordon' }
+//     })
+//     const deletedChef = await findChef.destroy()
+//     console.log(deletedChef)
+// }
+// deleteChef();
+
+
+async function createRecipe () {
+    const newRecipe = await db.recipe.findOrCreate({
+        where: { idMeal: 12345 },
+        defaults: {
+            title: 'Test Recipe',
+            image_url:'./imgs/lasagna.png'
+        }
+    })
+    console.log(newRecipe)
+}
+
+createRecipe();
+
+async function addComment () {
+    const chef = await db.chef.findOne({
+        where: { first_name: 'Gordon' },
+        include: db.chefs_comments
+    })
+    const recipe = await db.recipe.findOne({
+        where: { id: 1 },
+        include: db.chefs_comments
+    })
+    
+    const newComment = await db.chefs_comments.create({
+        comment: 'This is a test comment adding to the recipe created'
+    })
+    await 
+}
+

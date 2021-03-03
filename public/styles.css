@@ -1,0 +1,8 @@
+.nav-bar {
+   display: flex;
+   flex-direction:column;
+}
+
+.chef-card {
+    border: solid 4px blue;
+}
