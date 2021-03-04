@@ -99,7 +99,7 @@ router.get('/:id/recipes/:id', async (req, res) =>{
         let mealArr = []
         let ingredients = []
         let ingredientValues = []
-        let arrays = []
+        let combinedArrays = []
         const mealId = req.params.id
         const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
         const mealData = mealURL.data.meals
@@ -122,12 +122,12 @@ router.get('/:id/recipes/:id', async (req, res) =>{
                     ingredientValues.push(mealData[i][key])
                 }
             }
-            arrays = ingredientValues.map(function (value, index){
+            combinedArrays = ingredientValues.map(function (value, index){
                 return [value, ingredients[index]]
             })
         }
         console.log(`here are the ingredients ${ingredients}`)
-        res.render('chefs/chef-recipe-show', { mealData: mealData, arrays: arrays })
+        res.render('chefs/chef-recipe-show', { mealData: mealData, combinedArrays: combinedArrays })
     } catch (error) {
         console.log(error)
     }
