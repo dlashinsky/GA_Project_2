@@ -1,7 +1,7 @@
 <% mealData.forEach(meal =>{  %> 
 
-    <img src="<%=meal.strMealThumb%>"  alt="no image available" width=400px>
     <h2> Recipe Title: <%=meal.strMeal%> </h2>
+    <img src="<%=meal.strMealThumb%>"  alt="no image available" width=300px>
     <h3>Category: <%=meal.strCategory%> </h3>
     <h3>Cuisine: <%=meal.strArea%> </h3>
     <br>
@@ -17,7 +17,5 @@
     <h3>Procedure:</h3>
     <p><%=meal.strInstructions%></p>
     
-
-
 
 <% }) %> 

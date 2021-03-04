@@ -96,13 +96,14 @@ router.get('/:id', async (req, res) =>{
 //Chef clicks on viewing a recipe card in full detail
 router.get('/:id/recipes/:id', async (req, res) =>{
     try {
+        let mealData = null
         let mealArr = []
         let ingredients = []
         let ingredientValues = []
         let combinedArrays = []
         const mealId = req.params.id
         const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
-        const mealData = mealURL.data.meals
+        mealData = mealURL.data.meals
         // console.log(mealData)
         // let ingName = mealData.filter(ingredient =>{
         //     ingredient.strIngredient1 
@@ -112,21 +113,21 @@ router.get('/:id/recipes/:id', async (req, res) =>{
         // const array = Object.entries(mealData)
         // console.log(array)
         for (let i=0; i < mealData.length; i++){
-        
             for (const key in mealData[i]) {
                 mealArr= `${key}: ${mealData[i][key]}`
-                if(mealArr.includes("strIngredient") === true && (mealData[i][key] !== "") ){
-                    ingredients.push(mealData[i][key])
-                }
-                if(mealArr.includes("strMeasure") === true && (mealData[i][key] !== "") ){
-                    ingredientValues.push(mealData[i][key])
+                // console.log(key, mealData[i][key])
+                
+                if(mealData[i][key] === null || mealData[i][key] === '' || mealData[i][key] === ' ') {
+                    delete mealData[i][key]
                 }
             }
+            console.log(mealData[i])
             combinedArrays = ingredientValues.map(function (value, index){
                 return [value, ingredients[index]]
             })
+
         }
-        console.log(`here are the ingredients ${ingredients}`)
+        
         res.render('chefs/chef-recipe-show', { mealData: mealData, combinedArrays: combinedArrays })
     } catch (error) {
         console.log(error)

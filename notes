@@ -1,0 +1,16 @@
+for (const key in mealData[i]) {
+                mealArr= `${key}: ${mealData[i][key]}`
+              
+                if(mealArr.includes("null") === true){
+                    console.log(mealArr.indexOf(true))
+                }
+                if(mealArr.includes("strIngredient") === true && (mealData[i][key] !== " null " )){
+                    ingredients.push(mealData[i][key])
+                }
+                if(mealArr.includes("strMeasure") === true && (mealData[i][key] !== ("" || " ") )){
+                    ingredientValues.push(mealData[i][key])
+                }
+            }
+            combinedArrays = ingredientValues.map(function (value, index){
+                return [value, ingredients[index]]
+            })
