@@ -1,0 +1,24 @@
+<h1>Search recipes to review!</h1>
+
+
+<form method="GET" action="/chefs/:id/chef-home">
+    <input type="text" name="search">
+    <input type="submit" value="search">
+</form>
+    
+    
+<div class = search-cards>
+    <% recipes.forEach(recipe => { %>
+        <div class = recipe-preview>
+            <img src="<%=recipe.strMealThumb%>" alt="no image available" width=200px> 
+            <h5>  <%=recipe.strMeal %>  </h5> 
+
+            <form action="/chefs/:id/recipes/<%=recipe.idMeal%>"  method="GET">
+                <input type="submit" value="View Recipe">
+            </form>
+    
+        </div>
+    
+    <% }) %> 
+</div>
+

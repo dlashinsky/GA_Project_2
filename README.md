@@ -159,19 +159,20 @@ HTTP VERB | URL | Description
 ------------ | ------------- | -------------
 GET | /recipes | User search Query for all recipes within local database
 GET | /recipes/:id | User Clicking on a recipe (show page)
+GET | /chefs/new | renders creating an account page
+POST | /chefs/new | adds new chef to Database, redirects to login page
 GET | /chefs | User Clicking on "chefs", lists chefs.
 GET | /chefs/:id | User Clicking on a specific Chef
 GET | /chefs/login | Renders Chef's login page
-POST | /chefs/login | logs chef in, renders Chef's dashboard page
-GET | /chefs/new | renders creating an account page
-POST | /chefs/new | adds new chef to Database, redirects to login page
-GET | /meals-db-recipes | Chefs searching for recipe inspiration from API
-POST |/chefs:id/recipes | Chefs adding their own recipe to the database
+POST | /chefs/login | logs a chef in, redirects to Chef's homepage 
+GET | /chefs/:id/chef-home | Chef's home page.  Also same route that searches API for new recipes in order to render results on same page, but populating below the search bar.
+POST | /chefs/:id/chef-home/api-recipes/:id | A chef pinning a recipe 
 POST | /chefs/:id/meals-db-recipes/:id/recipes| Chef adding a recipe from API 
 POST | /chefs/:id/recipes/:id/cuisines| tagging a recipe with cuisine 
 POST | /chefs/:id/recipes/:id/comments| commenting on a recipe
 POST | /chefs/:id/recipes/:id/rating | chef submitting a rating for a recipe 
 
+<!-- POST | /chefs/:id/chef-recipes | Chefs adding their own recipe to the database -->
 
 
 ## Strech Goal Routes:

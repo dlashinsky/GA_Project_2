@@ -6,3 +6,32 @@
 .chef-card {
     border: solid 4px blue;
 }
+
+.experience-input{
+    width: 600px;
+    height: 60px;
+    text-align: left;
+    vertical-align: text-top;
+}
+
+.join-submit{
+    margin-top: 10%;
+}
+
+.chef-join-div {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+}
+
+.recipe-preview {
+    border: solid 2px red;
+    display: flex;
+    flex-direction: row;
+}
+
+.ingredients-div {
+    border: solid 2px red;
+    display: flex;
+    flex-direction: row;
+}

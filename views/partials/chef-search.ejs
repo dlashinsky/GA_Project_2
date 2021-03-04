@@ -1,0 +1,13 @@
+
+<h1>here is the partials page</h1>
+
+    <div class = search-cards>
+
+
+        <% recipeData.meals.forEach(data  => { %> 
+
+           <img src="<%=data.strMealThumb%>" alt="no image available" width=200px>
+           <h5>  <%=data.strMeal %>  </h5> 
+            <% }) %> 
+    </div>
+
