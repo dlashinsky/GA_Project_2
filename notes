@@ -14,3 +14,22 @@ for (const key in mealData[i]) {
             combinedArrays = ingredientValues.map(function (value, index){
                 return [value, ingredients[index]]
             })
+
+
+
+             // mealArr= `${key}: ${mealData[i][key]}`
+                //   console.log(key, mealData[i][key])
+                
+                // if(mealData[i][key] === null || mealData[i][key] === '' && mealData[i][key] === ' ') {
+                //     delete mealData[i][key]
+                // }   
+
+
+                // console.log(mealData)
+        // let ingName = mealData.filter(ingredient =>{
+        //     ingredient.strIngredient1 
+        // })
+        // console.log(ingName)
+        // console.log(mealData)
+        // const array = Object.entries(mealData)
+        // console.log(array)

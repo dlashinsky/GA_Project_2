@@ -2,7 +2,14 @@
     <div class = "nav-div">
         <a href="/chefs">Chefs</a>
         <a href="/">Home</a>
+
+        <% if(chef === null) { %> 
+         
         <a href="/chefs/login">Login</a>
         <a href="/chefs/new">Join</a>
+            
+        <% }else{ %> 
+        <a href="/chefs/logout">Logout</a>
+        <% } %> 
     </div>
 </nav>

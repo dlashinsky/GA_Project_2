@@ -2,6 +2,7 @@ const { default: axios } = require('axios');
 // const { in } = require('sequelize/types/lib/operators');
 const db = require('../models')
 const router = require('express').Router()
+const cryptojs = require('crypto-js')
 
 
 //GET Routes
@@ -28,7 +29,7 @@ router.get('/new', (req, res) =>{
 })
 
 //logging in a Chef
-router.post('/login', async (req, res) =>{
+router.post('/:id/chef-home', async (req, res) =>{
     try{
         const chef = await db.chef.findOne({
             where: { user_name: req.body.username }
@@ -37,7 +38,11 @@ router.post('/login', async (req, res) =>{
         const password = chef.password
         const userInputPassword = req.body.password
         if(password === req.body.password) {
-            res.redirect(`/chefs/${chefPk}/chef-home`)
+
+            const encryptedChefId = cryptojs.AES.encrypt(chef.id.toString(), 'test')
+            const encryptedChefIdString = encryptedChefId.toString()
+            res.cookie('chefId', encryptedChefIdString)
+            res.redirect(`/chefs/${chef.id}/chef-home`)
         }else{
             res.redirect('/chefs/login')
         }
@@ -55,12 +60,12 @@ router.get('/:id/chef-home', async (req, res) =>{
             const searchTerm = req.query.search
             const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`)
             const recipeData = mealURL.data
-            // const chefId = db.chef.findByPk(req.params.id)
             recipes = recipeData.meals
         } catch (error) {
             console.log(error)
         }
     }
+
     res.render('chefs/chef-home.ejs', { recipes: recipes })
 
 })
@@ -68,19 +73,25 @@ router.get('/:id/chef-home', async (req, res) =>{
 
 //This is to create a new chef in the system
 router.post('/new', async (req, res) =>{
-    const newChef = await db.chef.findOrCreate({
-        where: { user_name: req.body.username },
-        defaults: { 
+  
+    const newChef = await db.chef.create({
+            user_name: req.body.username,
             first_name: req.body.firstname,
             last_name: req.body.lastname,
             email: req.body.email,
             password: req.body.password,
             experience: req.body.experience
-        }
     })
-    console.log(newChef)
+    const encryptedChefId = cryptojs.AES.encrypt(newChef.id.toString(), 'test')
+    const encryptedChefIdString = encryptedChefId.toString()
+    res.cookie('chefId', encryptedChefIdString)
+    res.redirect('/chefs/login')
 })
 
+router.get('/logout', (req, res)=> {
+    res.clearCookie('chefId')
+    res.redirect('/')
+})
 
 //Loads profile of a particular Chef
 router.get('/:id', async (req, res) =>{
@@ -104,30 +115,19 @@ router.get('/:id/recipes/:id', async (req, res) =>{
         const mealId = req.params.id
         const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
         mealData = mealURL.data.meals
-        // console.log(mealData)
-        // let ingName = mealData.filter(ingredient =>{
-        //     ingredient.strIngredient1 
-        // })
-        // console.log(ingName)
-        // console.log(mealData)
-        // const array = Object.entries(mealData)
-        // console.log(array)
         for (let i=0; i < mealData.length; i++){
             for (const key in mealData[i]) {
-                mealArr= `${key}: ${mealData[i][key]}`
-                // console.log(key, mealData[i][key])
-                
-                if(mealData[i][key] === null || mealData[i][key] === '' || mealData[i][key] === ' ') {
-                    delete mealData[i][key]
+                if(key.includes("strIngredient") === true && (mealData[i][key] !== "" && mealData[i][key] !== " ") ){
+                    ingredients.push(mealData[i][key])
                 }
+                if(key.includes("strMeasure") === true && (mealData[i][key] !== "" && mealData[i][key] !== " ") ){
+                    ingredientValues.push(mealData[i][key])
+                }     
             }
-            console.log(mealData[i])
             combinedArrays = ingredientValues.map(function (value, index){
                 return [value, ingredients[index]]
             })
-
         }
-        
         res.render('chefs/chef-recipe-show', { mealData: mealData, combinedArrays: combinedArrays })
     } catch (error) {
         console.log(error)
