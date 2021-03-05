@@ -166,11 +166,11 @@ GET | /chefs/:id | User Clicking on a specific Chef
 GET | /chefs/login | Renders Chef's login page
 POST | /chefs/login | logs a chef in, redirects to Chef's homepage 
 GET | /chefs/:id/chef-home | Chef's home page.  Also same route that searches API for new recipes in order to render results on same page, but populating below the search bar.
-POST | /chefs/:id/chef-home/api-recipes/:id | A chef pinning a recipe 
-POST | /chefs/:id/meals-db-recipes/:id/recipes| Chef adding a recipe from API 
-POST | /chefs/:id/recipes/:id/cuisines| tagging a recipe with cuisine 
-POST | /chefs/:id/recipes/:id/comments| commenting on a recipe
-POST | /chefs/:id/recipes/:id/rating | chef submitting a rating for a recipe 
+POST | /chefs/:id/chef-home/recipes/:id | A chef pinning a recipe 
+POST | /chefs/:id/chef-home/recipes/:id/recipes| Chef adding a recipe from API 
+POST | /chefs/:id/chef-home/recipes/:id/cuisines| tagging a recipe with cuisine 
+POST | /chefs/:id/chef-home/recipes/:id/comments| commenting on a recipe
+POST | /chefs/:id/chef-home/recipes/:id/rating | chef submitting a rating for a recipe 
 
 <!-- POST | /chefs/:id/chef-recipes | Chefs adding their own recipe to the database -->
 

@@ -12,7 +12,7 @@ const cryptojs = require('crypto-js')
 router.get('/', async (req, res) =>{
     try {
         const chefs = await db.chef.findAll();
-        res.render('chefs/chef-index.ejs', { chefs: chefs})
+        res.render('chefs/chef-index.ejs', { chefs: chefs })
     } catch (error) {
         console.log(error)
     }
@@ -154,6 +154,10 @@ router.post('/:chefId/recipes/:recipeId/comments', async (req, res)=> {
         console.log(error)
     }
 })
+
+//Chef Pinning a recipe 
+
+
 
 
 module.exports = router
