@@ -33,3 +33,22 @@ for (const key in mealData[i]) {
         // console.log(mealData)
         // const array = Object.entries(mealData)
         // console.log(array)
+
+
+        To included pinning model 
+
+        ,{
+                model: db.chefs_pinned_recipes,
+                include: db.chef
+            }
+
+
+
+
+            const rating = await db.recipe.findOne({
+            where: { idMeal: req.params.idMeal},
+            include: [{
+                model: db.recipe_ratings,
+                include: db.chef
+            }]
+        })

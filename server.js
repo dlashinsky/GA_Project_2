@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser')
 const cryptojs = require('crypto-js')
 const axios = require('axios')
 const chefsController = require('./controllers/chefsController')
-const recipesController = require('./controllers/recipesController')
+const usersController = require('./controllers/usersController')
 
 
 const app = express()
@@ -24,29 +24,62 @@ app.use(express.static('public'))
 app.use(ejsLayouts)
 app.use(cookieParser())
 
+//RES.LOCALS AND DECRYPTION 
 app.use( async (req, res, next) => {
-    const decryptedChefId = cryptojs.AES.decrypt(req.cookies.chefId, 'test')
-    const decryptedChefIdString = decryptedChefId.toString(cryptojs.enc.Utf8)
+
+    if(req.cookies.chefId) {
+        const decryptedChefId = cryptojs.AES.decrypt(req.cookies.chefId, process.env.COOKIE_SECRET)
+        const decryptedChefIdString = decryptedChefId.toString(cryptojs.enc.Utf8)
+        const chef = await db.chef.findByPk(decryptedChefIdString)
+        res.locals.chef = chef
+        
+
+    }else {
+        res.locals.chef = null
+    }
     
-    const chef = await db.chef.findByPk(decryptedChefIdString)
-    res.locals.chef = chef
     next()
 })
 
 
 //Controllers
 app.use('/chefs', chefsController)
-app.use('/recipes', recipesController)
-
-
+app.use('/recipes', usersController)
 
 //Render Homepage
 app.get('/', async (req, res) => {
-    try{
-    console.log(res.locals)
     res.render('index.ejs')
-    }catch(err){
-        console.log(err)
+   
+})
+
+//Renders Create account page 
+app.get('/new', (req, res) =>{
+    res.render('chefs/chef-new.ejs')
+})
+
+//render login page
+app.get('/login', (req, res) =>{
+    res.render('chefs/chef-login.ejs')
+})
+
+//Anyone clicks on "chefs" in Nav-bar, displays all the chefs in the system 
+app.get('/chefs', async (req, res) =>{
+    try {
+        const chefs = await db.chef.findAll();
+        res.render('chefs/chef-index.ejs', { chefs: chefs })
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+//Loads profile of a particular Chef
+app.get('/:id', async (req, res) =>{
+    try {
+        const chef = await db.chef.findByPk(req.params.id)
+        const chefData = chef.dataValues
+        res.render('chefs/chef-profile.ejs', { chefData: chefData })
+    } catch (error) {
+        console.log(error)
     }
 })
 
