@@ -232,12 +232,12 @@ router.post('/:chefId/recipes/:idMeal/ratings', async (req, res) => {
         const rating = await db.recipe.findOne({
             where: { idMeal: req.params.idMeal},
             include: [{
-                model: db.recipe_ratings,
+                model: db.recipes_ratings,
                 include: db.chef
             }]
         })
 
-        console.log(rating + "")
+        console.log(rating + "XXXXXX")
 
         // if(rating.recipeId == recipeId){
         //     console.log(rating.recipeId, recipeId + "They're the same Values")
