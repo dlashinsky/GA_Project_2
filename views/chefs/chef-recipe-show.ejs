@@ -8,20 +8,34 @@
     </form>
 
     <!-- Pinning a Recipe -->
-    <form method= "POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/recipes">
-    <label for="Pinning">Pin this recipe</label>
-    <input type="submit" value="Pin">
-    </form>
+    <% if(chefPinned === true){ %> 
+       <!-- REMOVE THE PIN -->
+        <form method="POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/recipes/?_method=DELETE">
+        <input type="submit" value="Remove Pin">
+        </form>
+        
+      <% }else{ %> 
+        <!-- ADD THE PIN -->
+        <form method= "POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/recipes">
+        <label for="Pinning">Pin this recipe</label>
+        <input type="submit" value="Pin">
+        </form>
+    <% } %> 
 
     <!-- Rating a recipe -->
-    <form method= "POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/ratings">
-    <label for="ratings">Give this recipe a Rating</label>
-    <input type="text" name="rating">
-    <input type="submit" value="Rate">
+    <% if(chefRated === true){ %>
+        <!-- CHANGE THE RATING -->
+        <h2>You already rated this recipe</h2>
+
+        <% }else{ %>
+        <!-- ADD A RATING -->
+        <form method= "POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/ratings">
+        <label for="ratings">Give this recipe a Rating</label>
+        <input type="text" name="rating">
+        <input type="submit" value="Rate">
+        </form>
+    <% } %> 
     
-    </form>
-
-
     
     <h2> Recipe Title: <%=meal.strMeal%> </h2>
     <img src="<%=meal.strMealThumb%>"  alt="no image available" width=300px>
@@ -40,14 +54,28 @@
     <h3>Procedure:</h3>
     <p><%=meal.strInstructions%></p>
     
+    
+    
+    
+    <h3>Chef Comments:</h3>
+    
+    <div class = comment-div>
+        
+        <% chefComments.forEach(comment => {  %> 
+            
+            <h3 id= commentor><%=comment.chef.user_name %> </h3>
+            <h5 id= comment><%=comment.comment %> </h5>
+            <form method="POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/recipes/?_method=PUT">
+                <input type="hidden" name="commentId" value="<%=comment.id%>">
+                <input type="text" name="comment">
+                <input type="submit" value="Change Comment">
+            </form>
+            
+        <% }) %> 
+            
+    </div>
+
 <% }) %> 
+    
 
 
-<h3>Comments:</h3>
-
-<% chefComments.forEach(comment => {  %> 
-
-    <h4><%=comment.comment %> </h4>
-    <h4><%=comment.chef.user_name %> </h4>
-
-    <% }) %> 

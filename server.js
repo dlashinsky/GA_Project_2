@@ -9,7 +9,8 @@ const cryptojs = require('crypto-js')
 const axios = require('axios')
 const chefsController = require('./controllers/chefsController')
 const usersController = require('./controllers/usersController')
-
+const methodOverride = require('method-override')
+// const { removeTicks } = require('sequelize/types/lib/utils')
 
 const app = express()
 const rowdyResults = rowdy.begin(app)
@@ -23,6 +24,7 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.static('public'))
 app.use(ejsLayouts)
 app.use(cookieParser())
+app.use(methodOverride('_method'))
 
 //RES.LOCALS AND DECRYPTION 
 app.use( async (req, res, next) => {
@@ -32,8 +34,6 @@ app.use( async (req, res, next) => {
         const decryptedChefIdString = decryptedChefId.toString(cryptojs.enc.Utf8)
         const chef = await db.chef.findByPk(decryptedChefIdString)
         res.locals.chef = chef
-        
-
     }else {
         res.locals.chef = null
     }
@@ -49,8 +49,64 @@ app.use('/recipes', usersController)
 //Render Homepage
 app.get('/', async (req, res) => {
     res.render('index.ejs')
-   
 })
+
+//searchBar on homepage
+app.get('/recipes', async (req, res) =>{
+    //search recipes from database, add in API
+    let recipes = []
+    let searchRecipes = []
+    let searchedRecipes = []
+    let recipeImage = []
+    let recipeTitle = []
+    if(req.query.search) {
+        try {
+            let idMealAPI = []
+            let mealTitle = []
+            let image = []
+            if(req.query.search){
+                const searchTerm = req.query.search
+                const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchTerm}`)
+                const recipeData = mealURL.data
+                recipes = recipeData.meals
+            
+                async () => {
+                    for(let recipe of recipes){
+                       mealTitle = await recipe.strMeal
+                       idMealAPI = await recipe.idMeal
+                       image = await recipe.image_url
+                       searchRecipes = await db.recipe.findAll({
+                            where: {
+                                idMeal: idMealAPI
+                            }
+                        });
+                        
+                        // searchRecipes.forEach(recipe => {
+                            
+                        //     searchedRecipes.push({
+                        //         idMeal: recipe.idMeal,
+                        //         title: recipe.title,
+                        //         image_url: recipe.image_url
+                        //     })
+                            
+                        // })
+    
+                    }
+                }
+
+
+                console.log(searchRecipes)
+                console.log("HERE IS SEARCH RECIPES")
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    res.render('recipe-index.ejs', { recipes: recipes, searchRecipes: searchRecipes})
+})
+
 
 //Renders Create account page 
 app.get('/new', (req, res) =>{
@@ -73,7 +129,7 @@ app.get('/chefs', async (req, res) =>{
 })
 
 //Loads profile of a particular Chef
-app.get('/:id', async (req, res) =>{
+app.get('chefs/:chefId', async (req, res) =>{
     try {
         const chef = await db.chef.findByPk(req.params.id)
         const chefData = chef.dataValues

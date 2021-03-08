@@ -1,9 +1,10 @@
 const { default: axios } = require('axios');
-// const { in } = require('sequelize/types/lib/operators');
+// const {in} = require('sequelize/types/lib/operators');
 const db = require('../models')
 const router = require('express').Router()
 const cryptojs = require('crypto-js')
 const bcrypt = require('bcrypt')
+
 
 
 
@@ -118,8 +119,12 @@ router.get('/:chefId/recipes/:idMeal', async (req, res) =>{
         let ingredients = []
         let ingredientValues = []
         let combinedArrays = []
-        const idMeal = req.params.idMeal
-        const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
+        let mealURL = []
+        let recipe = null
+        const chefId = Number(req.params.chefId)
+        const idMeal = Number(req.params.idMeal)
+        
+        mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
         mealData = mealURL.data.meals
         for (let i=0; i < mealData.length; i++){
             for (const key in mealData[i]) {
@@ -134,22 +139,55 @@ router.get('/:chefId/recipes/:idMeal', async (req, res) =>{
                 return [value, ingredients[index]]
             })
         }
-        const recipe = await db.recipe.findOne({
+        
+        recipe = await db.recipe.findOne({
             where: {idMeal: req.params.idMeal}, 
             include: [{
                 model: db.chefs_comments,
                 include: db.chef
+            },{
+                model: db.chefs_pinned_recipes,
+                include: db.chef
+            },{
+                model: db.recipes_ratings,
+                include: db.chef
             }]
         })
-        let chefComments = []      
+        let chefComments = [] 
+        let chefPinned = null
+        let chefRated = null
+        let chefPinIds = []
+        let chefRateIds = []
+        let pinnedRecipeTable = []
+        let chefRatingsTable = []
         if(recipe){
             chefComments = recipe.chefs_comments 
+            pinnedRecipeTable = recipe.chefs_pinned_recipes
+            pinnedRecipeTable.forEach(key => {
+                chefPinIds = key.chefId
+            })
+            chefRatingsTable = recipe.recipes_ratings
+            chefRatingsTable.forEach(key => {
+                chefRateIds = key.chefId
+            })
+            if(recipe.idMeal === idMeal && chefId === chefPinIds){
+                chefPinned = true 
+            }else{
+                chefPinned = false
+            }
+            if(recipe.idMeal === idMeal && chefId === chefRateIds){
+                chefRated = true
+            }else{
+                chefRated = false
+            }
         }
-        
         res.render('chefs/chef-recipe-show', { 
             mealData: mealData, 
             combinedArrays: combinedArrays, 
-            chefComments: chefComments })
+            chefComments: chefComments,
+            chefPinned: chefPinned,
+            chefRated: chefRated
+         })
     } catch (error) {
         console.log(error)
     }
@@ -161,22 +199,29 @@ router.get('/:chefId/recipes/:idMeal', async (req, res) =>{
 router.post('/:chefId/recipes/:idMeal/recipes', async (req, res) => {
     try {
 
-        
+       const idMeal = req.params.idMeal
+       const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
+       const mealData = mealURL.data.meals
+       let mealTitle = []
+       let mealImageUrl = []
+       mealData.forEach(value => {
+            mealTitle = value.strMeal
+            mealImageUrl = value.strMealThumb
+       })
+       
         const [recipe, created] = await db.recipe.findOrCreate({
-            where: { idMeal: req.params.idMeal }
+            where: { idMeal: req.params.idMeal },
+            defaults: {
+                title: mealTitle,
+                image_url: mealImageUrl
+            }
         })
-        console.log(recipe.id + "  this is the recipe log" + recipe.idMeal)
-
         const chef = await db.chef.findOne({
             where: { id: req.params.chefId }
         })
-        console.log(chef.id + "   this is the chef log" + chef.first_name)
-
         chef.createChefs_pinned_recipe({
             recipeId: recipe.id
         })
-
-        const idMeal = req.params.idMeal
         const chefId = req.params.chefId
         res.redirect(`/chefs/${chefId}/recipes/${idMeal}`)
     } catch (error) {
@@ -200,19 +245,29 @@ router.post('/:chefId/recipes/:idMeal/cuisines', async (req, res) => {
 router.post('/:chefId/recipes/:idMeal/comments', async (req, res) => {
     try {
 
-        const [recipe, created] = await db.recipe.findOrCreate({
-            where: { idMeal: req.params.idMeal }
+        const idMeal = req.params.idMeal
+        const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
+        const mealData = mealURL.data.meals
+        let mealTitle = []
+        let mealImageUrl = []
+        mealData.forEach(value => {
+            mealTitle = value.strMeal
+            mealImageUrl = value.strMealThumb
         })
-
+        const [recipe, created] = await db.recipe.findOrCreate({
+            where: { idMeal: req.params.idMeal },
+            defaults: {
+                title: mealTitle,
+                image_url: mealImageUrl
+            }
+        })
         const chef = await db.chef.findOne({
             where: { id: req.params.chefId }
         })
-
         chef.createChefs_comment({
             comment: req.body.comment,
             recipeId: recipe.id
         })
-        const idMeal = req.params.idMeal
         res.redirect(`/chefs/${chef.id}/recipes/${idMeal}`)
     } catch (error) {
         console.log(error)
@@ -223,58 +278,100 @@ router.post('/:chefId/recipes/:idMeal/comments', async (req, res) => {
 //Chef rating a recipe 
 router.post('/:chefId/recipes/:idMeal/ratings', async (req, res) => {
     try {
-
-        const idMeal = req.params.idMeal
-        const chefId = req.params.chefId
-
-        // console.log("PARAMETERS " + chefId, recipeId)
-        
-        const rating = await db.recipe.findOne({
-            where: { idMeal: req.params.idMeal},
-            include: [{
-                model: db.recipes_ratings,
-                include: db.chef
-            }]
+        console.log("HERE IS THE ADD RATING ROUTE")
+        const idMeal = Number(req.params.idMeal)
+        const chefId = Number(req.params.chefId)
+        let overRate = false
+        const mealURL = await axios.get(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idMeal}`)
+        const mealData = mealURL.data.meals
+        let mealTitle = []
+        let mealImageUrl = []
+        mealData.forEach(value => {
+                mealTitle = value.strMeal
+                mealImageUrl = value.strMealThumb
         })
-
-        console.log(rating + "XXXXXX")
-
-        // if(rating.recipeId == recipeId){
-        //     console.log(rating.recipeId, recipeId + "They're the same Values")
-        // }
-
-        // if(rating.recipeId != recipeId){
-        //     console.log(rating.recipeId, recipeId + "They're NOT the same values")
-        // }
-
-        if(rating.chefId != chefId && rating.recipeId != recipeId){
-
-            const chef = await db.chef.findOne({
-                where: { id: req.params.chefId }
-            })
-
-            if(req.body.rating <= 10){
-                chef.createRecipes_rating({
-                    recipeId: req.params.recipeId,
-                    rating: req.body.rating
-                })
-            }else{
-                res.render("YOU CAN'T RATE HIGHER THAN 10!")
+        const [recipe, created] = await db.recipe.findOrCreate({
+            where: { idMeal: req.params.idMeal },
+            defaults: {
+                title: mealTitle,
+                image_url: mealImageUrl
             }
-
-            res.redirect(`/chefs/${chefId}/recipes/${recipeId}`)
-
+        })
+        const chef = await db.chef.findOne({
+            where: { id: req.params.chefId }
+        })
+        if(req.body.rating <= 10){
+            chef.createRecipes_rating({
+                rating: req.body.rating,
+                recipeId: recipe.id
+            })
+            overRate = false
+            res.redirect(`/chefs/${chefId}/recipes/${idMeal}`)
         }else{
+            overRate = true
             res.render('chefs/error-page.ejs')
         }
-
-        
-
     } catch (error) {
         console.log(error)
     }
 })
 
+
+//REMOVE PIN 
+router.delete('/:chefId/recipes/:idMeal/recipes', async (req, res) =>{
+    try{
+        console.log("HERE IS THE DELETE PIN ROUTE")
+        let pinId = []
+        let idMealPin = []
+        let idMealParam = Number(req.params.idMeal)
+        let chefsPinnedTable = []
+        let chefIdPin = []
+        const chefId = Number(req.params.chefId)
+        const idMeal = Number(req.params.idMeal)
+        const recipe = await db.recipe.findOne({
+            where: {idMeal: req.params.idMeal},
+            include: [{
+                model: db.chefs_pinned_recipes,
+                include: db.chef
+            }]
+        })
+        idMealPin = recipe.idMeal
+        chefsPinnedTable = recipe.chefs_pinned_recipes
+        chefsPinnedTable.forEach(column =>{
+            chefIdPin = column.chefId
+            if(chefId === chefIdPin  &&  idMealParam === idMealPin){
+                pinId = column.id
+            }
+        })
+       const pinnedRecipe = await db.chefs_pinned_recipes.findByPk(pinId)
+       const removePinnedRecipe =  await pinnedRecipe.destroy();
+       res.redirect(`/chefs/${chefId}/recipes/${idMeal}`)
+    }catch(err){
+        console.log(err)
+    }
+})
+
+//CHANGE COMMENT
+router.put('/:chefId/recipes/:idMeal/recipes', async (req, res) =>{
+    try {
+        console.log("HERE IS THE PUT ROUTE")
+        const chefId = Number(req.params.chefId)
+        const idMeal = Number(req.params.idMeal)
+        
+        const existingComment = await db.chefs_comments.findOne({
+            where: {id: req.body.commentId}
+        })
+        const updatedComment = await existingComment.update({
+            comment: req.body.comment
+        })
+        console.log(updatedComment)
+        console.log("ABOVE IS THE COMMENT INFORMATION")
+        
+        res.redirect(`/chefs/${chefId}/recipes/${idMeal}`)
+    } catch (err) {
+        console.log(err)
+    }
+})
 
 
 module.exports = router

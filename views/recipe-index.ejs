@@ -1,1 +1,17 @@
 <h1>hello from here</h1>
+
+
+<div class = search-cards>
+    <% searchRecipes.forEach(recipe => { %>
+    <div class = recipe-preview>
+        <img src="<%=recipe.dataValues.image_url%>" alt="no image available" width=200px> 
+        <h5>  <%=recipe.title %>  </h5> 
+
+        <form action="/recipes/<%=recipe.idMeal%>"  method="GET">
+            <input type="submit" value="View Recipe">
+        </form>
+
+    </div>
+
+    <% }) %> 
+</div>
