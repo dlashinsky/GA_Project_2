@@ -1,4 +1,23 @@
+<div class = "chef-show-page">
+
 <% mealData.forEach(meal =>{  %> 
+    
+    <h2> Recipe Title: <%=meal.strMeal%> </h2>
+    <img src="<%=meal.strMealThumb%>"  alt="no image available" width=300px>
+    <h3>Category: <%=meal.strCategory%> </h3>
+    <h3>Cuisine: <%=meal.strArea%> </h3>
+    <br>
+
+    <h3>Ingredients:</h3>
+    <ul><% for(let i=0; i < combinedArrays.length; i++){ %>
+        
+        <li><%=combinedArrays[i][0]%> of <%=combinedArrays[i][1]%></li>
+    <% } %> 
+
+    </ul>
+
+    <h3>Procedure:</h3>
+    <p><%=meal.strInstructions%></p>
 
     <!-- Making a comment on a recipe -->
     <form method="POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/comments">
@@ -37,22 +56,6 @@
     <% } %> 
     
     
-    <h2> Recipe Title: <%=meal.strMeal%> </h2>
-    <img src="<%=meal.strMealThumb%>"  alt="no image available" width=300px>
-    <h3>Category: <%=meal.strCategory%> </h3>
-    <h3>Cuisine: <%=meal.strArea%> </h3>
-    <br>
-
-    <h3>Ingredients:</h3>
-    <ul><% for(let i=0; i < combinedArrays.length; i++){ %>
-        
-        <li><%=combinedArrays[i][0]%> of <%=combinedArrays[i][1]%></li>
-    <% } %> 
-
-    </ul>
-
-    <h3>Procedure:</h3>
-    <p><%=meal.strInstructions%></p>
     
     
     
@@ -63,7 +66,7 @@
         
         <% chefComments.forEach(comment => {  %> 
             
-            <h3 id= commentor><%=comment.chef.user_name %> </h3>
+            <h3 id= commentor>chef:<%=comment.chef.user_name %> </h3>
             <h5 id= comment><%=comment.comment %> </h5>
             <form method="POST" action="/chefs/<%=chef.id%>/recipes/<%=meal.idMeal%>/recipes/?_method=PUT">
                 <input type="hidden" name="commentId" value="<%=comment.id%>">
@@ -77,5 +80,5 @@
 
 <% }) %> 
     
-
+</div>
 

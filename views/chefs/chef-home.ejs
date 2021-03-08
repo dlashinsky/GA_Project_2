@@ -1,24 +1,30 @@
-<h1>Welcome <%=chef.first_name%>! </h1>
+<div class = "chef-home">
 
-<h4>Search for new Recipes</h4>
-<form method="GET" action="/chefs/<%=chef.id%>/chef-home">
-    <input type="text" name="search">
-    <input type="submit" value="search">
-</form>
-    
-    
-<div class = search-cards>
-    <% recipes.forEach(recipe => { %>
-    <div class = recipe-preview>
-        <img src="<%=recipe.strMealThumb%>" alt="no image available" width=200px> 
-        <h5>  <%=recipe.strMeal %>  </h5> 
+    <h1>Welcome <%=chef.first_name%>! </h1>
 
-        <form action="/chefs/<%=chef.id%>/recipes/<%=recipe.idMeal%>"  method="GET">
-            <input type="submit" value="View Recipe">
-        </form>
+    <h4>Search for new Recipes</h4>
+    <form method="GET" action="/chefs/<%=chef.id%>/chef-home">
+        <input type="text" name="search">
+        <input type="submit" value="search">
+    </form>
+    
+    <div class = search-results-div>
+
+
+        <div class = search-cards>
+            <% recipes.forEach(recipe => { %>
+            <div class = recipe-preview>
+                <img src="<%=recipe.strMealThumb%>" alt="no image available" width=200px> 
+                <h5> <%=recipe.strMeal %>  </h5> 
+
+                
+            </div>
+            
+            <form action="/chefs/<%=chef.id%>/recipes/<%=recipe.idMeal%>"  method="GET">
+                <input type="submit" value="View Recipe">
+            </form>
+            <% }) %> 
+        </div>
 
     </div>
-
-    <% }) %> 
 </div>
-

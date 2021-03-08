@@ -3,14 +3,15 @@
         <a href="/chefs">Chefs</a>
         <a href="/">Home</a>
 
-        <% if(chef === null) { %> 
+        <% if(chef) { %> 
+            <a href="/chefs/logout">Logout</a>
+            <a href="/chefs/<%=chef.id%>/chef-home">Search Recipes</a>
+            <a href="/chefs/<%=chef.id%>/profile">Your Profile</a>
          
-        <a href="/login">Login</a>
-        <a href="/new">Join</a>
             
-        <% }else{ %> 
-        <a href="/chefs/logout">Logout</a>
-        <a href="/chefs/<%=chef.id%>/chef-home">Search Recipes</a>
+            <% }else{ %> 
+                <a href="/login">Login</a>
+                <a href="/new">Join</a>
 
         <% } %> 
     </div>
